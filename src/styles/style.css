@@ -1,0 +1,21 @@
+.VideoContainer {
+    position: relative;
+}
+
+.VideoLineContainer {
+    position: absolute;
+    left: 0;
+    bottom: 7px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    width: 900px;
+}
+
+.VideoLine {
+    width: 100%;
+    height: 10px;
+    background-color: gray;
+    padding: 2px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
