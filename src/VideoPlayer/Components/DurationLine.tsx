@@ -6,14 +6,17 @@ interface VideoType {
   stopVideo: () => void;
   playVideo: () => void;
   changeCurrentTime: (time: number) => void;
+  isPlaying: boolean;
 }
 
-function DurationLine({ currentTime, duration, stopVideo, playVideo, changeCurrentTime }: VideoType) {
+function DurationLine({ currentTime, duration, stopVideo, playVideo, changeCurrentTime, isPlaying }: VideoType) {
   const [isMouseDown, setIsMouseDown] = useState(false);
+  const [isPlayingBeforeMouseDown, setIsPlayingBeforeMouseDown] = useState(false);
   return (
     <div
       className="VideoLine"
       onMouseDown={(e) => {
+        setIsPlayingBeforeMouseDown(isPlaying);
         stopVideo();
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -30,7 +33,9 @@ function DurationLine({ currentTime, duration, stopVideo, playVideo, changeCurre
         }
       }}
       onMouseUp={() => {
-        playVideo();
+        if (isPlayingBeforeMouseDown) {
+          playVideo();
+        }
         setIsMouseDown(false);
       }}
     >
