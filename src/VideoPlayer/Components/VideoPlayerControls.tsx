@@ -5,6 +5,7 @@ import PlayIcon from "../../assets/svgs/PlayIcon";
 import RestartIcon from "../../assets/svgs/RestartIcon";
 import VolumeLarge from "../../assets/svgs/VolumeLarge";
 import VolumeSmall from "../../assets/svgs/VolumeSmall";
+import { formatTime } from "../../utils";
 
 interface VideoPlayerControlsProps {
   stopVideo: () => void;
@@ -53,6 +54,7 @@ function VideoPlayerControls({
         </div>
         <div className="inputcontainer">
           <input
+            style={{ cursor: "pointer" }}
             min={0}
             max={100}
             onChange={(e) => {
@@ -63,6 +65,7 @@ function VideoPlayerControls({
           />
         </div>
       </div>
+      <div style={{ color: "white", marginLeft: 10 }}>{formatTime(currentTime!) + " / " + formatTime(duration!)}</div>
     </div>
   );
 }

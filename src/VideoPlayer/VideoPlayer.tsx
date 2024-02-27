@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import MaximizeIcon from "../assets/svgs/MaximizeIcon";
+import MinimizeIcon from "../assets/svgs/MinimizeIcon";
+import PlaybackSpeedIcon from "../assets/svgs/PlaybackSpeedIcon";
+import QualityIcon from "../assets/svgs/QualityIcon";
+import SettingsIcon from "../assets/svgs/SettingsIcon";
 import DurationLine from "./Components/DurationLine";
 import VideoPlayerControls from "./Components/VideoPlayerControls";
 
@@ -22,6 +27,11 @@ function VideoPlayer({ url }: VideoPlayerProps) {
   const animationFrameRef = useRef<number>();
   const [isLoading, setIsLoading] = useState(true);
   const [showControls, setShowControls] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+
+  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
 
   const updateCurrentTime = () => {
     if (videoRef.current) {
@@ -122,6 +132,33 @@ function VideoPlayer({ url }: VideoPlayerProps) {
     }
   };
 
+  const toggleFullScreen = () => {
+    if (videoContainerRef.current) {
+      if (!document.fullscreenElement) {
+        videoContainerRef.current.requestFullscreen().catch((err) => {
+          console.log("Error attempting to enable full screen:", err.message);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsFullScreen(false);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullScreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullScreenChange);
+    };
+  }, []);
+
   if (isLoading) {
     <div>
       <p>Loading...</p>
@@ -131,28 +168,28 @@ function VideoPlayer({ url }: VideoPlayerProps) {
   return (
     <div>
       <div
-        className="VideoContainer"
+        ref={videoContainerRef}
+        className={`VideoContainer`}
         onMouseEnter={() => {
           setShowControls(true);
         }}
         onMouseLeave={() => {
           setShowControls(false);
+          setIsSettingsMenuOpen(false);
         }}
       >
-        <video onMouseDown={togglePlay} ref={videoRef} autoPlay muted width={900}>
+        <video onMouseDown={togglePlay} ref={videoRef} autoPlay muted width={"100%"} controls={false}>
           <source src={url} type="video/mp4" />
         </video>
-        <div className={`VideoControlsContainer ${showControls ? "visible" : "hidden"}`}>
-          <div className={`VideoLineContainer`}>
-            <DurationLine
-              isPlaying={video?.isPlaying!}
-              stopVideo={stopVideo}
-              playVideo={playVideo}
-              changeCurrentTime={changeCurrentTime}
-              currentTime={video?.currentTime!}
-              duration={video?.duration!}
-            />
-          </div>
+        <div className={`VideoControlsContainer  ${showControls ? "visible" : "hidden"}`}>
+          <DurationLine
+            isPlaying={video?.isPlaying!}
+            stopVideo={stopVideo}
+            playVideo={playVideo}
+            changeCurrentTime={changeCurrentTime}
+            currentTime={video?.currentTime!}
+            duration={video?.duration!}
+          />
           <div className="VideoControls">
             <VideoPlayerControls
               muted={video?.muted!}
@@ -168,6 +205,40 @@ function VideoPlayer({ url }: VideoPlayerProps) {
               volume={video?.volume!}
               isPlaying={video?.isPlaying!}
             />
+            <div className="VideoControlsRight">
+              {isSettingsMenuOpen ? (
+                <div className="VideoSettingsMenu">
+                  <div className="VideoSettingsMenuRow">
+                    <div className="VideoSettingsMenuRowLeft">
+                      <QualityIcon />
+                      <div>Quality</div>
+                    </div>
+                    <div>1080p</div>
+                  </div>
+                  <div className="VideoSettingsMenuRow">
+                    <div className="VideoSettingsMenuRowLeft">
+                      <PlaybackSpeedIcon />
+                      <div>Playback Speed</div>
+                    </div>
+                    <div>Normal (1)</div>
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
+              <div style={{ cursor: "pointer" }} onClick={() => setIsSettingsMenuOpen((prev) => !prev)}>
+                <SettingsIcon />
+              </div>
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setIsFullScreen((prev) => !prev);
+                  toggleFullScreen();
+                }}
+              >
+                {isFullScreen ? <MinimizeIcon /> : <MaximizeIcon />}
+              </div>
+            </div>
           </div>
         </div>
       </div>
