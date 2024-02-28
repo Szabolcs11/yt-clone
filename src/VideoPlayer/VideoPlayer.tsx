@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import MaximizeIcon from "../assets/svgs/MaximizeIcon";
-import MinimizeIcon from "../assets/svgs/MinimizeIcon";
-import PlaybackSpeedIcon from "../assets/svgs/PlaybackSpeedIcon";
-import QualityIcon from "../assets/svgs/QualityIcon";
-import SettingsIcon from "../assets/svgs/SettingsIcon";
 import DurationLine from "./Components/DurationLine";
-import VideoPlayerControls from "./Components/VideoPlayerControls";
+import VideoPlayerControls, { closeSettingsMenu } from "./Components/VideoPlayerControls";
+import { closePlaybackMenu } from "./Components/Settings/SettingsMenu";
 
 interface VideoType {
   url: string;
@@ -30,8 +26,6 @@ function VideoPlayer({ url }: VideoPlayerProps) {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   const videoContainerRef = useRef<HTMLDivElement>(null);
-
-  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
 
   const updateCurrentTime = () => {
     if (videoRef.current) {
@@ -146,6 +140,12 @@ function VideoPlayer({ url }: VideoPlayerProps) {
     }
   };
 
+  const changeVideoPlaybackRate = (speed: number) => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = speed;
+    }
+  };
+
   useEffect(() => {
     const handleFullScreenChange = () => {
       if (!document.fullscreenElement) {
@@ -175,7 +175,8 @@ function VideoPlayer({ url }: VideoPlayerProps) {
         }}
         onMouseLeave={() => {
           setShowControls(false);
-          setIsSettingsMenuOpen(false);
+          closeSettingsMenu();
+          closePlaybackMenu();
         }}
       >
         <video onMouseDown={togglePlay} ref={videoRef} autoPlay muted width={"100%"} controls={false}>
@@ -190,56 +191,25 @@ function VideoPlayer({ url }: VideoPlayerProps) {
             currentTime={video?.currentTime!}
             duration={video?.duration!}
           />
-          <div className="VideoControls">
-            <VideoPlayerControls
-              muted={video?.muted!}
-              toggleMute={toggleMute}
-              setSound={setSound}
-              restartVideo={restartVideo}
-              isEnded={video?.ended!}
-              stopVideo={stopVideo}
-              playVideo={playVideo}
-              togglePlay={togglePlay}
-              currentTime={video?.currentTime!}
-              duration={video?.duration!}
-              volume={video?.volume!}
-              isPlaying={video?.isPlaying!}
-            />
-            <div className="VideoControlsRight">
-              {isSettingsMenuOpen ? (
-                <div className="VideoSettingsMenu">
-                  <div className="VideoSettingsMenuRow">
-                    <div className="VideoSettingsMenuRowLeft">
-                      <QualityIcon />
-                      <div>Quality</div>
-                    </div>
-                    <div>1080p</div>
-                  </div>
-                  <div className="VideoSettingsMenuRow">
-                    <div className="VideoSettingsMenuRowLeft">
-                      <PlaybackSpeedIcon />
-                      <div>Playback Speed</div>
-                    </div>
-                    <div>Normal (1)</div>
-                  </div>
-                </div>
-              ) : (
-                <></>
-              )}
-              <div style={{ cursor: "pointer" }} onClick={() => setIsSettingsMenuOpen((prev) => !prev)}>
-                <SettingsIcon />
-              </div>
-              <div
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  setIsFullScreen((prev) => !prev);
-                  toggleFullScreen();
-                }}
-              >
-                {isFullScreen ? <MinimizeIcon /> : <MaximizeIcon />}
-              </div>
-            </div>
-          </div>
+          <VideoPlayerControls
+            muted={video?.muted!}
+            toggleMute={toggleMute}
+            setSound={setSound}
+            restartVideo={restartVideo}
+            isEnded={video?.ended!}
+            stopVideo={stopVideo}
+            playVideo={playVideo}
+            togglePlay={togglePlay}
+            currentTime={video?.currentTime!}
+            duration={video?.duration!}
+            volume={video?.volume!}
+            isPlaying={video?.isPlaying!}
+            isFullScreen={isFullScreen}
+            setIsFullScreen={setIsFullScreen}
+            toggleFullScreen={toggleFullScreen}
+            playbackRate={Number(videoRef.current?.playbackRate)}
+            changeVideoPlaybackRate={changeVideoPlaybackRate}
+          />
         </div>
       </div>
       <p>{JSON.stringify(video)}</p>

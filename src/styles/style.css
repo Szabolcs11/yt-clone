@@ -97,10 +97,25 @@
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    padding: 4px;
 }
 
 .VideoSettingsMenuRow:hover {
     background-color: #f9f9f9;
+}
+
+.VideoSettingsMenuRowSelected {
+    background-color: gray;
+    border-radius: 4px;
+    padding: 4px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    cursor: pointer;
+    justify-content: space-between;
+    margin-bottom: 8px;
 }
 
 .VideoSettingsMenuRowLeft {
@@ -176,4 +191,12 @@ input[type=range]::-webkit-slider-runnable-track {
     height: 6px;
     background: #fff;
     border-radius: 50px;
+}
+
+.VideoSettingsHeader {
+    display: flex;
+    align-items: center;
+    border-bottom: #000 solid 2px;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
 }
